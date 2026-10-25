@@ -8,6 +8,9 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   instalador:
     runs-on: windows-latest
@@ -39,3 +42,13 @@ jobs:
           name: CafeCostos-Instalador
           path: publish/CafeCostos_Instalador_*.exe
           if-no-files-found: error
+
+      - name: Publicar en la página de descargas (Releases)
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $exe = Get-ChildItem publish\CafeCostos_Instalador_*.exe | Select-Object -First 1
+          $ver = ($exe.BaseName -replace 'CafeCostos_Instalador_','')
+          gh release delete "v$ver" --yes --cleanup-tag 2>$null
+          gh release create "v$ver" $exe.FullName --title "CaféCostos $ver" --notes "Descargue CafeCostos_Instalador_$ver.exe, haga doble clic y pulse Instalar."
