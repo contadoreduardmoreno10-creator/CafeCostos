@@ -1,0 +1,171 @@
+<UserControl x:Class="CafeCostos.App.Views.TuesteView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <DockPanel>
+        <TextBlock DockPanel.Dock="Top" Text="{Binding Titulo}" Style="{StaticResource TituloPantalla}" />
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="470" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- =============== NUEVA ORDEN =============== -->
+            <Border Style="{StaticResource Tarjeta}">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <TextBlock Text="Nueva orden de tueste" Style="{StaticResource TituloTarjeta}" />
+
+                        <TextBlock Text="1. Café seco que entra al tostador" FontWeight="SemiBold" FontSize="15" />
+                        <TextBlock Text="Lote" Style="{StaticResource Etiqueta}" />
+                        <ComboBox ItemsSource="{Binding LotesDisponibles}" SelectedItem="{Binding LoteElegido}" DisplayMemberPath="Descripcion" />
+                        <DockPanel Margin="0,8,0,0">
+                            <Button DockPanel.Dock="Right" Content="Agregar" Command="{Binding AgregarLoteCommand}" Margin="8,0,0,0" />
+                            <TextBox Text="{Binding KgLote, Converter={StaticResource Num}}" Style="{StaticResource Numero}" ToolTip="Kilos a tomar de este lote" />
+                        </DockPanel>
+                        <TextBlock Text="Puede mezclar varios lotes (blend); el costo se promedia por kilos." Style="{StaticResource Ayuda}" />
+
+                        <DataGrid ItemsSource="{Binding Lineas}" Margin="0,10,0,0" MaxHeight="180" RowHeight="34">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Lote" Binding="{Binding Lote.Codigo}" />
+                                <DataGridTextColumn Header="Kg" Binding="{Binding Kilos, StringFormat=N2}" ElementStyle="{StaticResource CeldaDerecha}" />
+                                <DataGridTextColumn Header="Costo" Binding="{Binding CostoEstimado, StringFormat=C0}" ElementStyle="{StaticResource CeldaDerecha}" Width="*" />
+                                <DataGridTemplateColumn>
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Style="{StaticResource BotonIcono}" Content="&#xE74D;" ToolTip="Quitar"
+                                                    Command="{Binding DataContext.QuitarLineaCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <TextBlock Margin="0,6,0,0"><Run Text="Total kilos secos: " /><Run Text="{Binding KgSecos, StringFormat={}{0:N2} kg, Mode=OneWay}" FontWeight="SemiBold" /></TextBlock>
+
+                        <TextBlock Text="2. Resultado del tueste" FontWeight="SemiBold" FontSize="15" Margin="0,18,0,0" />
+                        <Grid>
+                            <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="12" /><ColumnDefinition /></Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <TextBlock Text="Fecha" Style="{StaticResource Etiqueta}" />
+                                <DatePicker SelectedDate="{Binding Fecha}" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Perfil de tueste" Style="{StaticResource Etiqueta}" />
+                                <ComboBox ItemsSource="{Binding Perfiles}" Text="{Binding Perfil}" IsEditable="True" />
+                            </StackPanel>
+                        </Grid>
+                        <TextBlock Text="Kilos tostados obtenidos (pesados al salir) *" Style="{StaticResource Etiqueta}" />
+                        <TextBox Text="{Binding KgTostados, Converter={StaticResource Num}}" Style="{StaticResource Numero}" FontSize="18" FontWeight="SemiBold" />
+
+                        <TextBlock Text="3. Costos de conversión de esta tostión" FontWeight="SemiBold" FontSize="15" Margin="0,18,0,0" />
+                        <Grid>
+                            <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="8" /><ColumnDefinition /><ColumnDefinition Width="8" /><ColumnDefinition /></Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <TextBlock Text="Gas / energía" Style="{StaticResource Etiqueta}" />
+                                <TextBox Text="{Binding Energia, Converter={StaticResource Pesos}}" Style="{StaticResource Numero}" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Mano de obra" Style="{StaticResource Etiqueta}" />
+                                <TextBox Text="{Binding ManoObra, Converter={StaticResource Pesos}}" Style="{StaticResource Numero}" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="4">
+                                <TextBlock Text="Otros (CIF)" Style="{StaticResource Etiqueta}" />
+                                <TextBox Text="{Binding Otros, Converter={StaticResource Pesos}}" Style="{StaticResource Numero}" />
+                            </StackPanel>
+                        </Grid>
+                        <Button Content="Sugerir según tarifas configuradas" Command="{Binding SugerirCostosCommand}" HorizontalAlignment="Left" Margin="0,8,0,0" MinHeight="36" FontSize="13" />
+                        <TextBox Text="{Binding Observaciones}" Margin="0,10,0,0" ToolTip="Observaciones" />
+
+                        <!-- ===== Vista previa del costeo ===== -->
+                        <Border Style="{StaticResource Resaltado}" Visibility="{Binding Previa, Converter={StaticResource NuloVis}}">
+                            <StackPanel>
+                                <Grid>
+                                    <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition /></Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions><RowDefinition /><RowDefinition /><RowDefinition /></Grid.RowDefinitions>
+                                    <StackPanel>
+                                        <TextBlock Text="Merma por evaporación" Foreground="{StaticResource TextoSuave}" />
+                                        <TextBlock Style="{StaticResource ValorMedio}">
+                                            <Run Text="{Binding Previa.PctMerma, StringFormat={}{0:N2} %, Mode=OneWay}" />
+                                            <Run Text="{Binding Previa.KgMerma, StringFormat=({0:N2} kg), Mode=OneWay}" FontSize="13" FontWeight="Normal" />
+                                        </TextBlock>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock Text="Rendimiento" Foreground="{StaticResource TextoSuave}" />
+                                        <TextBlock Style="{StaticResource ValorMedio}" Text="{Binding Previa.FactorConversion, StringFormat={}{0:N3} kg secos por kg tostado}" FontSize="14" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Row="1" Margin="0,10,0,0">
+                                        <TextBlock Text="Costo kg seco (promedio)" Foreground="{StaticResource TextoSuave}" />
+                                        <TextBlock Style="{StaticResource ValorMedio}" Text="{Binding Previa.CostoKgSecoPromedio, StringFormat={}{0:C0}}" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,10,0,0">
+                                        <TextBlock Text="Merma absorbida (valor)" Foreground="{StaticResource TextoSuave}" />
+                                        <TextBlock Style="{StaticResource ValorMedio}" Text="{Binding Previa.CostoMermaAbsorbida, StringFormat={}{0:C0}}" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Row="2" Margin="0,10,0,0">
+                                        <TextBlock Text="Costo total de la orden" Foreground="{StaticResource TextoSuave}" />
+                                        <TextBlock Style="{StaticResource ValorMedio}" Text="{Binding Previa.CostoTotal, StringFormat={}{0:C0}}" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Row="2" Grid.Column="1" Margin="0,10,0,0">
+                                        <TextBlock Text="COSTO KG TOSTADO" Foreground="{StaticResource AcentoOscuro}" FontWeight="SemiBold" />
+                                        <TextBlock Style="{StaticResource ValorGrande}" Foreground="{StaticResource AcentoOscuro}" Text="{Binding Previa.CostoKgTostado, StringFormat={}{0:C0}}" />
+                                    </StackPanel>
+                                </Grid>
+                                <Border Style="{StaticResource CajaAviso}" Visibility="{Binding Advertencias, Converter={StaticResource TextoVis}}">
+                                    <TextBlock Text="{Binding Advertencias}" TextWrapping="Wrap" Foreground="{StaticResource Aviso}" />
+                                </Border>
+                            </StackPanel>
+                        </Border>
+                        <TextBlock Text="{Binding MensajePrevia}" Style="{StaticResource Ayuda}" Foreground="{StaticResource Aviso}" FontSize="14"
+                                   Visibility="{Binding MensajePrevia, Converter={StaticResource TextoVis}}" Margin="0,12,0,0" />
+
+                        <StackPanel Orientation="Horizontal" Margin="0,18,0,0">
+                            <Button Content="Registrar tostión" Style="{StaticResource BotonPrimario}" Command="{Binding RegistrarCommand}" />
+                            <Button Content="Limpiar" Command="{Binding LimpiarCommand}" />
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+
+            <!-- =============== HISTORIAL =============== -->
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions><RowDefinition Height="2*" /><RowDefinition Height="*" /></Grid.RowDefinitions>
+                <Border Style="{StaticResource Tarjeta}">
+                    <DockPanel>
+                        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,10">
+                            <Button DockPanel.Dock="Right" Content="Anular orden" Style="{StaticResource BotonPeligro}" Command="{Binding AnularCommand}" Margin="0" />
+                            <TextBlock Text="Órdenes de tueste" Style="{StaticResource TituloTarjeta}" Margin="0" VerticalAlignment="Center" />
+                        </DockPanel>
+                        <DataGrid ItemsSource="{Binding Ordenes}" SelectedItem="{Binding Seleccionada}" RowStyle="{StaticResource FilaConEstado}">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Orden" Binding="{Binding Numero}" />
+                                <DataGridTextColumn Header="Fecha" Binding="{Binding Fecha, StringFormat=d}" />
+                                <DataGridTextColumn Header="Perfil" Binding="{Binding PerfilTueste}" />
+                                <DataGridTextColumn Header="Lotes" Binding="{Binding LotesOrigen}" Width="*" />
+                                <DataGridTextColumn Header="Kg secos" Binding="{Binding KgSecos, StringFormat=N2}" ElementStyle="{StaticResource CeldaDerecha}" />
+                                <DataGridTextColumn Header="Kg tostados" Binding="{Binding KgTostados, StringFormat=N2}" ElementStyle="{StaticResource CeldaDerecha}" />
+                                <DataGridTextColumn Header="Merma %" Binding="{Binding PctMerma, StringFormat=N2}" ElementStyle="{StaticResource CeldaDerecha}" />
+                                <DataGridTextColumn Header="Costo kg tostado" Binding="{Binding CostoKgTostado, StringFormat=C0}" ElementStyle="{StaticResource CeldaDerecha}" />
+                                <DataGridTextColumn Header="Kg disp." Binding="{Binding KgDisponibles, StringFormat=N2}" ElementStyle="{StaticResource CeldaDerecha}" />
+                                <DataGridTextColumn Header="Estado" Binding="{Binding Estado}" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </DockPanel>
+                </Border>
+                <Border Grid.Row="1" Style="{StaticResource Tarjeta}">
+                    <DockPanel>
+                        <TextBlock DockPanel.Dock="Top" Text="Lotes de café seco usados en la orden seleccionada" Style="{StaticResource TituloTarjeta}" FontSize="15" />
+                        <DataGrid ItemsSource="{Binding DetalleSeleccionada}">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Lote" Binding="{Binding CodigoLote}" />
+                                <DataGridTextColumn Header="Proveedor" Binding="{Binding Proveedor}" Width="*" />
+                                <DataGridTextColumn Header="Kg usados" Binding="{Binding KgUsados, StringFormat=N2}" ElementStyle="{StaticResource CeldaDerecha}" />
+                                <DataGridTextColumn Header="Costo/kg" Binding="{Binding CostoKg, StringFormat=C0}" ElementStyle="{StaticResource CeldaDerecha}" />
+                                <DataGridTextColumn Header="Costo" Binding="{Binding CostoTotal, StringFormat=C0}" ElementStyle="{StaticResource CeldaDerecha}" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </DockPanel>
+                </Border>
+            </Grid>
+        </Grid>
+    </DockPanel>
+</UserControl>

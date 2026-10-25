@@ -1,0 +1,71 @@
+<UserControl x:Class="CafeCostos.App.Views.ReportesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <DockPanel>
+        <TextBlock DockPanel.Dock="Top" Text="{Binding Titulo}" Style="{StaticResource TituloPantalla}" />
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!-- ============ RENTABILIDAD POR PRESENTACIÓN ============ -->
+            <Border Style="{StaticResource Tarjeta}">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="Rentabilidad por presentación" Style="{StaticResource TituloTarjeta}" />
+                    <WrapPanel DockPanel.Dock="Top" Margin="0,0,0,10">
+                        <TextBlock Text="Desde" VerticalAlignment="Center" Margin="0,0,8,0" />
+                        <DatePicker SelectedDate="{Binding Desde}" Width="150" />
+                        <TextBlock Text="Hasta" VerticalAlignment="Center" Margin="16,0,8,0" />
+                        <DatePicker SelectedDate="{Binding Hasta}" Width="150" Margin="0,0,12,0" />
+                        <Button Content="Consultar" Style="{StaticResource BotonPrimario}" Command="{Binding ConsultarCommand}" />
+                    </WrapPanel>
+                    <Border DockPanel.Dock="Bottom" Style="{StaticResource Resaltado}">
+                        <TextBlock FontSize="15">
+                            <Run Text="Ventas: " /><Run Text="{Binding TotalVentas, StringFormat={}{0:C0}, Mode=OneWay}" FontWeight="SemiBold" />
+                            <Run Text="  ·  Costo de ventas: " /><Run Text="{Binding TotalCosto, StringFormat={}{0:C0}, Mode=OneWay}" FontWeight="SemiBold" />
+                            <Run Text="  ·  Utilidad bruta: " /><Run Text="{Binding TotalUtilidad, StringFormat={}{0:C0}, Mode=OneWay}" FontWeight="SemiBold" Foreground="{StaticResource Exito}" />
+                            <Run Text="{Binding MargenTotal, StringFormat=({0:N1} %), Mode=OneWay}" />
+                        </TextBlock>
+                    </Border>
+                    <DataGrid ItemsSource="{Binding VentasPresentacion}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Presentación" Binding="{Binding Presentacion}" Width="*" />
+                            <DataGridTextColumn Header="Unidades" Binding="{Binding Unidades, StringFormat=N0}" ElementStyle="{StaticResource CeldaDerecha}" />
+                            <DataGridTextColumn Header="Ventas" Binding="{Binding Ventas, StringFormat=C0}" ElementStyle="{StaticResource CeldaDerecha}" />
+                            <DataGridTextColumn Header="Costo" Binding="{Binding Costo, StringFormat=C0}" ElementStyle="{StaticResource CeldaDerecha}" />
+                            <DataGridTextColumn Header="Utilidad" Binding="{Binding Utilidad, StringFormat=C0}" ElementStyle="{StaticResource CeldaDerecha}" />
+                            <DataGridTextColumn Header="Margen %" Binding="{Binding MargenPct, StringFormat=N1}" ElementStyle="{StaticResource CeldaDerecha}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </DockPanel>
+            </Border>
+
+            <!-- ============ TRAZABILIDAD ============ -->
+            <Border Grid.Row="1" Style="{StaticResource Tarjeta}">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="Trazabilidad: venta → lote empacado → tostión → lote de café seco" Style="{StaticResource TituloTarjeta}" />
+                    <DockPanel DockPanel.Dock="Top" Margin="0,0,0,10">
+                        <Button DockPanel.Dock="Right" Content="Buscar" Command="{Binding BuscarCommand}" Margin="8,0,0,0" />
+                        <TextBox Text="{Binding Buscar}" ToolTip="Número de factura, lote, orden de tueste o cliente" />
+                    </DockPanel>
+                    <DataGrid ItemsSource="{Binding Trazabilidad}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Factura" Binding="{Binding NumeroFactura}" />
+                            <DataGridTextColumn Header="Fecha" Binding="{Binding FechaVenta, StringFormat=d}" />
+                            <DataGridTextColumn Header="Cliente" Binding="{Binding Cliente}" Width="*" />
+                            <DataGridTextColumn Header="Lote empacado" Binding="{Binding CodigoLoteEmpacado}" />
+                            <DataGridTextColumn Header="Presentación" Binding="{Binding Presentacion}" />
+                            <DataGridTextColumn Header="Cant." Binding="{Binding Cantidad}" ElementStyle="{StaticResource CeldaDerecha}" />
+                            <DataGridTextColumn Header="Tueste" Binding="{Binding NumeroTueste}" />
+                            <DataGridTextColumn Header="Fecha tueste" Binding="{Binding FechaTueste, StringFormat=d}" />
+                            <DataGridTextColumn Header="Lote seco" Binding="{Binding CodigoLoteSeco}" />
+                            <DataGridTextColumn Header="Proveedor" Binding="{Binding Proveedor}" />
+                            <DataGridTextColumn Header="Origen" Binding="{Binding Origen}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </DockPanel>
+            </Border>
+        </Grid>
+    </DockPanel>
+</UserControl>

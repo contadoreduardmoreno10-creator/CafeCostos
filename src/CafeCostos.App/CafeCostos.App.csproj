@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <RootNamespace>CafeCostos.App</RootNamespace>
+    <AssemblyName>CafeCostos</AssemblyName>
+    <ApplicationIcon>Recursos\cafe.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <SatelliteResourceLanguages>es</SatelliteResourceLanguages>
+    <InvariantGlobalization>false</InvariantGlobalization>
+  </PropertyGroup>
+  <ItemGroup>
+    <Resource Include="Recursos\cafe.png" />
+    <Resource Include="Recursos\cafe.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CafeCostos.Core\CafeCostos.Core.csproj" />
+    <ProjectReference Include="..\CafeCostos.Data\CafeCostos.Data.csproj" />
+  </ItemGroup>
+</Project>

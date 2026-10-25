@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Acceso a datos con Dapper + Microsoft.Data.SqlClient.
+       Se eligió Dapper (y no EF Core) porque el costeo exige control total de transacciones,
+       bloqueos de fila (UPDLOCK) y SQL explícito con compresión; además arranca más rápido
+       y el ejecutable final es más liviano para un equipo de oficina modesto. -->
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>CafeCostos.Data</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.1.35" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Scripts\*.sql" LogicalName="Scripts.%(Filename)%(Extension)" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CafeCostos.Core\CafeCostos.Core.csproj" />
+  </ItemGroup>
+</Project>

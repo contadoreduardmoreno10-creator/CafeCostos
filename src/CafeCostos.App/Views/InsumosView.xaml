@@ -1,0 +1,134 @@
+<UserControl x:Class="CafeCostos.App.Views.InsumosView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <DockPanel>
+        <TextBlock DockPanel.Dock="Top" Text="{Binding Titulo}" Style="{StaticResource TituloPantalla}" />
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="400" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!-- ============ LISTA ============ -->
+            <Border Style="{StaticResource Tarjeta}">
+                <DockPanel>
+                    <DockPanel DockPanel.Dock="Top" Margin="0,0,0,10">
+                        <Button DockPanel.Dock="Right" Content="Nuevo insumo" Command="{Binding NuevoCommand}" Margin="0" />
+                        <TextBlock VerticalAlignment="Center" FontSize="15">
+                            <Run Text="Valor del inventario de insumos: " /><Run Text="{Binding ValorTotalInventario, StringFormat={}{0:C0}, Mode=OneWay}" FontWeight="SemiBold" />
+                        </TextBlock>
+                    </DockPanel>
+                    <DataGrid ItemsSource="{Binding Insumos}" SelectedItem="{Binding Seleccionado}">
+                        <DataGrid.RowStyle>
+                            <Style TargetType="DataGridRow">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding BajoMinimo}" Value="True">
+                                        <Setter Property="Foreground" Value="{StaticResource Peligro}" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGrid.RowStyle>
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Código" Binding="{Binding Codigo}" />
+                            <DataGridTextColumn Header="Insumo" Binding="{Binding Nombre}" Width="*" />
+                            <DataGridTextColumn Header="Unidad" Binding="{Binding Unidad}" />
+                            <DataGridTextColumn Header="Existencia" Binding="{Binding Stock, StringFormat=N0}" ElementStyle="{StaticResource CeldaDerecha}" />
+                            <DataGridTextColumn Header="Mínimo" Binding="{Binding StockMinimo, StringFormat=N0}" ElementStyle="{StaticResource CeldaDerecha}" />
+                            <DataGridTextColumn Header="Costo promedio" Binding="{Binding CostoPromedio, StringFormat=C2}" ElementStyle="{StaticResource CeldaDerecha}" />
+                            <DataGridTextColumn Header="Valor" Binding="{Binding ValorStock, StringFormat=C0}" ElementStyle="{StaticResource CeldaDerecha}" />
+                            <DataGridCheckBoxColumn Header="Activo" Binding="{Binding Activo}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </DockPanel>
+            </Border>
+
+            <!-- ============ KARDEX ============ -->
+            <Border Grid.Row="1" Style="{StaticResource Tarjeta}">
+                <DockPanel>
+                    <DockPanel DockPanel.Dock="Top" Margin="0,0,0,8">
+                        <Button DockPanel.Dock="Right" Content="Ajustar por conteo físico" Command="{Binding AjustarCommand}" Margin="0" />
+                        <TextBlock Text="Kardex del insumo seleccionado (promedio ponderado)" Style="{StaticResource TituloTarjeta}" Margin="0" FontSize="15" VerticalAlignment="Center" />
+                    </DockPanel>
+                    <DataGrid ItemsSource="{Binding Kardex}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Fecha" Binding="{Binding Fecha, StringFormat=g}" />
+                            <DataGridTextColumn Header="Tipo" Binding="{Binding Tipo}" />
+                            <DataGridTextColumn Header="Documento" Binding="{Binding Documento}" />
+                            <DataGridTextColumn Header="Detalle" Binding="{Binding Detalle}" Width="*" />
+                            <DataGridTextColumn Header="Cantidad" Binding="{Binding Cantidad, StringFormat=N0}" ElementStyle="{StaticResource CeldaDerecha}" />
+                            <DataGridTextColumn Header="Costo unit." Binding="{Binding CostoUnitario, StringFormat=C2}" ElementStyle="{StaticResource CeldaDerecha}" />
+                            <DataGridTextColumn Header="Valor" Binding="{Binding ValorTotal, StringFormat=C0}" ElementStyle="{StaticResource CeldaDerecha}" />
+                            <DataGridTextColumn Header="Saldo cant." Binding="{Binding SaldoCantidad, StringFormat=N0}" ElementStyle="{StaticResource CeldaDerecha}" />
+                            <DataGridTextColumn Header="Saldo valor" Binding="{Binding SaldoValor, StringFormat=C0}" ElementStyle="{StaticResource CeldaDerecha}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </DockPanel>
+            </Border>
+
+            <!-- ============ FORMULARIOS ============ -->
+            <Border Grid.Column="1" Grid.RowSpan="2" Style="{StaticResource Tarjeta}">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <TextBlock Text="Datos del insumo" Style="{StaticResource TituloTarjeta}" />
+                        <TextBlock Text="Nombre *" Style="{StaticResource Etiqueta}" />
+                        <TextBox Text="{Binding Edicion.Nombre}" />
+                        <Grid>
+                            <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="12" /><ColumnDefinition /></Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <TextBlock Text="Unidad" Style="{StaticResource Etiqueta}" />
+                                <TextBox Text="{Binding Edicion.Unidad}" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Stock mínimo" Style="{StaticResource Etiqueta}" />
+                                <TextBox Text="{Binding Edicion.StockMinimo, Converter={StaticResource Num}}" Style="{StaticResource Numero}" />
+                            </StackPanel>
+                        </Grid>
+                        <TextBlock Text="Costo de referencia por unidad ($)" Style="{StaticResource Etiqueta}" />
+                        <TextBox Text="{Binding Edicion.UltimoCosto, Converter={StaticResource Pesos}}" Style="{StaticResource Numero}" />
+                        <TextBlock Text="Se usa solo para simular precios mientras no haya existencias; el costo real sale de las compras." Style="{StaticResource Ayuda}" />
+                        <CheckBox Content="Activo" IsChecked="{Binding Edicion.Activo}" />
+                        <Button Content="Guardar insumo" Command="{Binding GuardarCommand}" Margin="0,14,0,0" HorizontalAlignment="Left" />
+
+                        <Border Height="1" Background="{StaticResource Borde}" Margin="0,22,0,8" />
+                        <TextBlock Text="Registrar compra" Style="{StaticResource TituloTarjeta}" />
+                        <TextBlock Text="Seleccione el insumo en la lista." Style="{StaticResource Ayuda}"
+                                   Visibility="{Binding Seleccionado, Converter={StaticResource NuloVisInv}}" />
+                        <StackPanel Visibility="{Binding Seleccionado, Converter={StaticResource NuloVis}}">
+                            <TextBlock Text="{Binding Seleccionado.Nombre}" FontWeight="SemiBold" FontSize="15" />
+                            <TextBlock Text="Fecha" Style="{StaticResource Etiqueta}" />
+                            <DatePicker SelectedDate="{Binding FechaCompra}" />
+                            <Grid>
+                                <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="12" /><ColumnDefinition /></Grid.ColumnDefinitions>
+                                <StackPanel>
+                                    <TextBlock Text="Cantidad comprada" Style="{StaticResource Etiqueta}" />
+                                    <TextBox Text="{Binding CantidadCompra, Converter={StaticResource Num}}" Style="{StaticResource Numero}" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="2">
+                                    <TextBlock Text="Valor total pagado ($)" Style="{StaticResource Etiqueta}" />
+                                    <TextBox Text="{Binding ValorCompra, Converter={StaticResource Pesos}}" Style="{StaticResource Numero}" />
+                                </StackPanel>
+                            </Grid>
+                            <TextBlock Margin="0,6,0,0"><Run Text="Costo por unidad: " /><Run Text="{Binding CostoUnitarioCompra, StringFormat={}{0:C2}, Mode=OneWay}" FontWeight="SemiBold" /></TextBlock>
+                            <Grid>
+                                <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="12" /><ColumnDefinition /></Grid.ColumnDefinitions>
+                                <StackPanel>
+                                    <TextBlock Text="N.º factura proveedor" Style="{StaticResource Etiqueta}" />
+                                    <TextBox Text="{Binding DocumentoCompra}" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="2">
+                                    <TextBlock Text="Proveedor" Style="{StaticResource Etiqueta}" />
+                                    <TextBox Text="{Binding ProveedorCompra}" />
+                                </StackPanel>
+                            </Grid>
+                            <Button Content="Registrar compra" Style="{StaticResource BotonPrimario}" Command="{Binding ComprarCommand}" Margin="0,14,0,0" HorizontalAlignment="Left" />
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+        </Grid>
+    </DockPanel>
+</UserControl>

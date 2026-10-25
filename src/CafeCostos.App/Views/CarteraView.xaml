@@ -1,0 +1,141 @@
+<UserControl x:Class="CafeCostos.App.Views.CarteraView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <DockPanel>
+        <DockPanel DockPanel.Dock="Top">
+            <Button DockPanel.Dock="Right" Content="Actualizar" Command="{Binding ActualizarCommand}" VerticalAlignment="Top" Margin="0,0,16,0" />
+            <TextBlock Text="{Binding Titulo}" Style="{StaticResource TituloPantalla}" />
+        </DockPanel>
+
+        <!-- ============ EDADES DE CARTERA ============ -->
+        <UniformGrid DockPanel.Dock="Top" Columns="6">
+            <Border Style="{StaticResource Kpi}" MinWidth="0" Margin="0,0,10,16">
+                <StackPanel><TextBlock Text="Por vencer" Style="{StaticResource Etiqueta}" Margin="0,0,0,4" />
+                    <TextBlock Text="{Binding Edades.PorVencer, StringFormat={}{0:C0}}" Style="{StaticResource ValorMedio}" Foreground="{StaticResource Exito}" /></StackPanel>
+            </Border>
+            <Border Style="{StaticResource Kpi}" MinWidth="0" Margin="0,0,10,16">
+                <StackPanel><TextBlock Text="1 a 30 días" Style="{StaticResource Etiqueta}" Margin="0,0,0,4" />
+                    <TextBlock Text="{Binding Edades.De1a30, StringFormat={}{0:C0}}" Style="{StaticResource ValorMedio}" Foreground="{StaticResource Aviso}" /></StackPanel>
+            </Border>
+            <Border Style="{StaticResource Kpi}" MinWidth="0" Margin="0,0,10,16">
+                <StackPanel><TextBlock Text="31 a 60 días" Style="{StaticResource Etiqueta}" Margin="0,0,0,4" />
+                    <TextBlock Text="{Binding Edades.De31a60, StringFormat={}{0:C0}}" Style="{StaticResource ValorMedio}" Foreground="{StaticResource Peligro}" /></StackPanel>
+            </Border>
+            <Border Style="{StaticResource Kpi}" MinWidth="0" Margin="0,0,10,16">
+                <StackPanel><TextBlock Text="61 a 90 días" Style="{StaticResource Etiqueta}" Margin="0,0,0,4" />
+                    <TextBlock Text="{Binding Edades.De61a90, StringFormat={}{0:C0}}" Style="{StaticResource ValorMedio}" Foreground="{StaticResource Peligro}" /></StackPanel>
+            </Border>
+            <Border Style="{StaticResource Kpi}" MinWidth="0" Margin="0,0,10,16">
+                <StackPanel><TextBlock Text="Más de 90 días" Style="{StaticResource Etiqueta}" Margin="0,0,0,4" />
+                    <TextBlock Text="{Binding Edades.MasDe90, StringFormat={}{0:C0}}" Style="{StaticResource ValorMedio}" Foreground="{StaticResource Peligro}" FontWeight="Bold" /></StackPanel>
+            </Border>
+            <Border Style="{StaticResource Kpi}" MinWidth="0" Margin="0,0,16,16" Background="{StaticResource AcentoClaro}">
+                <StackPanel><TextBlock Text="Total cartera" Style="{StaticResource Etiqueta}" Margin="0,0,0,4" />
+                    <TextBlock Text="{Binding Edades.Total, StringFormat={}{0:C0}, Mode=OneWay}" Style="{StaticResource ValorMedio}" /></StackPanel>
+            </Border>
+        </UniformGrid>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="400" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="3*" />
+                <RowDefinition Height="2*" />
+            </Grid.RowDefinitions>
+
+            <!-- ============ FACTURAS PENDIENTES ============ -->
+            <Border Style="{StaticResource Tarjeta}">
+                <DockPanel>
+                    <DockPanel DockPanel.Dock="Top" Margin="0,0,0,10">
+                        <TextBlock Text="Cliente:" VerticalAlignment="Center" Margin="0,0,8,0" />
+                        <Button DockPanel.Dock="Right" Content="Ver todos" Command="{Binding LimpiarFiltroCommand}" Margin="8,0,0,0" />
+                        <ComboBox ItemsSource="{Binding Clientes}" SelectedItem="{Binding FiltroCliente}" DisplayMemberPath="Descripcion" />
+                    </DockPanel>
+                    <TextBlock DockPanel.Dock="Bottom" Margin="0,8,0,0" FontSize="15">
+                        <Run Text="Saldo de las facturas mostradas: " /><Run Text="{Binding TotalFiltrado, StringFormat={}{0:C0}, Mode=OneWay}" FontWeight="SemiBold" />
+                    </TextBlock>
+                    <DataGrid ItemsSource="{Binding Pendientes}" SelectedItem="{Binding Factura}">
+                        <DataGrid.RowStyle>
+                            <Style TargetType="DataGridRow">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Vencida}" Value="True">
+                                        <Setter Property="Foreground" Value="{StaticResource Peligro}" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGrid.RowStyle>
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Factura" Binding="{Binding NumeroFactura}" />
+                            <DataGridTextColumn Header="Cliente" Binding="{Binding Cliente}" Width="*" />
+                            <DataGridTextColumn Header="Fecha" Binding="{Binding Fecha, StringFormat=d}" />
+                            <DataGridTextColumn Header="Vence" Binding="{Binding FechaVencimiento, StringFormat=d}" />
+                            <DataGridTextColumn Header="Días mora" Binding="{Binding DiasVencido}" ElementStyle="{StaticResource CeldaDerecha}" />
+                            <DataGridTextColumn Header="Total" Binding="{Binding Total, StringFormat=C0}" ElementStyle="{StaticResource CeldaDerecha}" />
+                            <DataGridTextColumn Header="Saldo" Binding="{Binding Saldo, StringFormat=C0}" ElementStyle="{StaticResource CeldaDerecha}" FontWeight="SemiBold" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </DockPanel>
+            </Border>
+
+            <!-- ============ REGISTRAR ABONO ============ -->
+            <Border Grid.Column="1" Grid.RowSpan="2" Style="{StaticResource Tarjeta}">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <TextBlock Text="Registrar abono" Style="{StaticResource TituloTarjeta}" />
+                        <TextBlock Text="Seleccione una factura de la lista." Style="{StaticResource Ayuda}"
+                                   Visibility="{Binding Factura, Converter={StaticResource NuloVisInv}}" />
+                        <StackPanel Visibility="{Binding Factura, Converter={StaticResource NuloVis}}">
+                            <Border Style="{StaticResource Resaltado}" Margin="0,0,0,6">
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Factura.Cliente}" FontWeight="SemiBold" FontSize="16" TextWrapping="Wrap" />
+                                    <TextBlock><Run Text="Factura " /><Run Text="{Binding Factura.NumeroFactura, Mode=OneWay}" />
+                                        <Run Text=" · vence " /><Run Text="{Binding Factura.FechaVencimiento, StringFormat=d, Mode=OneWay}" /></TextBlock>
+                                    <TextBlock Margin="0,8,0,0" Foreground="{StaticResource TextoSuave}" Text="Saldo pendiente" />
+                                    <TextBlock Text="{Binding Factura.Saldo, StringFormat={}{0:C0}}" Style="{StaticResource ValorGrande}" Foreground="{StaticResource AcentoOscuro}" />
+                                </StackPanel>
+                            </Border>
+                            <TextBlock Text="Fecha del pago" Style="{StaticResource Etiqueta}" />
+                            <DatePicker SelectedDate="{Binding FechaAbono}" />
+                            <TextBlock Text="Valor recibido ($)" Style="{StaticResource Etiqueta}" />
+                            <DockPanel>
+                                <Button DockPanel.Dock="Right" Content="Pagar todo" Command="{Binding PagarTodoCommand}" Margin="8,0,0,0" />
+                                <TextBox Text="{Binding ValorAbono, Converter={StaticResource Pesos}}" Style="{StaticResource Numero}" FontSize="18" FontWeight="SemiBold" />
+                            </DockPanel>
+                            <TextBlock Text="Medio de pago" Style="{StaticResource Etiqueta}" />
+                            <ComboBox ItemsSource="{Binding MediosPago}" SelectedItem="{Binding MedioPago}" />
+                            <TextBlock Text="Referencia (n.º de transferencia, etc.)" Style="{StaticResource Etiqueta}" />
+                            <TextBox Text="{Binding Referencia}" />
+                            <Button Content="Registrar e imprimir recibo" Style="{StaticResource BotonGrande}" Command="{Binding RegistrarImprimirCommand}"
+                                    Margin="0,18,0,0" HorizontalAlignment="Stretch" Background="{StaticResource Exito}" BorderBrush="{StaticResource Exito}" />
+                            <Button Content="Registrar abono" Command="{Binding RegistrarAbonoCommand}" Margin="0,8,0,0" HorizontalAlignment="Stretch" />
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+
+            <!-- ============ HISTORIAL DE ABONOS ============ -->
+            <Border Grid.Row="1" Style="{StaticResource Tarjeta}">
+                <DockPanel>
+                    <DockPanel DockPanel.Dock="Top" Margin="0,0,0,8">
+                        <Button DockPanel.Dock="Right" Content="Anular recibo" Style="{StaticResource BotonPeligro}" Command="{Binding AnularAbonoCommand}" Margin="8,0,0,0" />
+                        <Button DockPanel.Dock="Right" Content="Imprimir recibo" Command="{Binding ImprimirReciboCommand}" Margin="0" />
+                        <TextBlock Text="Historial de abonos" Style="{StaticResource TituloTarjeta}" Margin="0" VerticalAlignment="Center" FontSize="15" />
+                    </DockPanel>
+                    <DataGrid ItemsSource="{Binding Abonos}" SelectedItem="{Binding AbonoSeleccionado}" RowStyle="{StaticResource FilaConEstado}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Recibo" Binding="{Binding NumeroRecibo}" />
+                            <DataGridTextColumn Header="Fecha" Binding="{Binding Fecha, StringFormat=d}" />
+                            <DataGridTextColumn Header="Factura" Binding="{Binding NumeroFactura}" />
+                            <DataGridTextColumn Header="Cliente" Binding="{Binding Cliente}" Width="*" />
+                            <DataGridTextColumn Header="Medio" Binding="{Binding MedioPago}" />
+                            <DataGridTextColumn Header="Valor" Binding="{Binding Valor, StringFormat=C0}" ElementStyle="{StaticResource CeldaDerecha}" />
+                            <DataGridCheckBoxColumn Header="Anulado" Binding="{Binding Anulado}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </DockPanel>
+            </Border>
+        </Grid>
+    </DockPanel>
+</UserControl>

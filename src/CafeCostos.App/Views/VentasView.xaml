@@ -1,0 +1,191 @@
+<UserControl x:Class="CafeCostos.App.Views.VentasView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <DockPanel>
+        <TextBlock DockPanel.Dock="Top" Text="{Binding Titulo}" Style="{StaticResource TituloPantalla}" />
+        <TabControl Background="Transparent" BorderThickness="0" FontSize="15">
+            <!-- ======================= NUEVA VENTA ======================= -->
+            <TabItem Header="  Nueva venta  " Padding="12,8">
+                <Grid Margin="0,14,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="430" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Border Style="{StaticResource Tarjeta}">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <StackPanel>
+                                <TextBlock Text="Cliente y forma de pago" Style="{StaticResource TituloTarjeta}" />
+                                <TextBlock Text="Cliente" Style="{StaticResource Etiqueta}" />
+                                <ComboBox ItemsSource="{Binding Clientes}" SelectedItem="{Binding Cliente}" DisplayMemberPath="Descripcion"
+                                          IsEditable="True" IsTextSearchEnabled="True" TextSearch.TextPath="Nombre" />
+                                <TextBlock Text="{Binding InfoCliente}" Style="{StaticResource Ayuda}" />
+
+                                <TextBlock Text="Fecha" Style="{StaticResource Etiqueta}" />
+                                <DatePicker SelectedDate="{Binding Fecha}" />
+
+                                <TextBlock Text="Forma de pago" Style="{StaticResource Etiqueta}" />
+                                <StackPanel Orientation="Horizontal">
+                                    <RadioButton Content="Contado" Style="{StaticResource Segmento}" IsChecked="{Binding EsContado}" GroupName="pago" MinWidth="130" />
+                                    <RadioButton Content="Crédito" Style="{StaticResource Segmento}" IsChecked="{Binding EsCredito}" GroupName="pago" MinWidth="130" IsEnabled="{Binding PuedeCredito}" />
+                                </StackPanel>
+                                <StackPanel Visibility="{Binding EsContado, Converter={StaticResource BoolVis}}">
+                                    <TextBlock Text="Medio de pago" Style="{StaticResource Etiqueta}" />
+                                    <ComboBox ItemsSource="{Binding MediosPago}" SelectedItem="{Binding MedioPago}" />
+                                </StackPanel>
+                                <StackPanel Visibility="{Binding EsCredito, Converter={StaticResource BoolVis}}">
+                                    <TextBlock Text="Plazo (días)" Style="{StaticResource Etiqueta}" />
+                                    <TextBox Text="{Binding DiasCredito, Converter={StaticResource Num}}" Style="{StaticResource Numero}" />
+                                </StackPanel>
+
+                                <TextBlock Text="Productos" Style="{StaticResource TituloTarjeta}" Margin="0,22,0,6" />
+                                <TextBlock Text="Lote de producto terminado" Style="{StaticResource Etiqueta}" />
+                                <ComboBox ItemsSource="{Binding LotesDisponibles}" SelectedItem="{Binding LoteElegido}" DisplayMemberPath="Descripcion" />
+                                <Grid Margin="0,4,0,0">
+                                    <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="10" /><ColumnDefinition /></Grid.ColumnDefinitions>
+                                    <StackPanel>
+                                        <TextBlock Text="Cantidad" Style="{StaticResource Etiqueta}" />
+                                        <TextBox Text="{Binding Cantidad, Converter={StaticResource Num}}" Style="{StaticResource Numero}" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Text="Precio unitario" Style="{StaticResource Etiqueta}" />
+                                        <TextBox Text="{Binding Precio, Converter={StaticResource Pesos}}" Style="{StaticResource Numero}" />
+                                    </StackPanel>
+                                </Grid>
+                                <Button Content="Agregar a la venta" Command="{Binding AgregarCommand}" Margin="0,12,0,0" HorizontalAlignment="Stretch" />
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Border>
+
+                    <Border Grid.Column="1" Style="{StaticResource Tarjeta}">
+                        <DockPanel>
+                            <!-- Totales y botones -->
+                            <StackPanel DockPanel.Dock="Bottom">
+                                <Grid Margin="0,10,0,0">
+                                    <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="200" /></Grid.ColumnDefinitions>
+                                    <StackPanel>
+                                        <TextBlock Text="Observaciones" Style="{StaticResource Etiqueta}" Margin="0,0,0,4" />
+                                        <TextBox Text="{Binding Observaciones}" Margin="0,0,16,0" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock Text="Descuento ($)" Style="{StaticResource Etiqueta}" Margin="0,0,0,4" />
+                                        <TextBox Text="{Binding Descuento, Converter={StaticResource Pesos}}" Style="{StaticResource Numero}" />
+                                    </StackPanel>
+                                </Grid>
+                                <Border Style="{StaticResource Resaltado}" Visibility="{Binding Totales, Converter={StaticResource NuloVis}}">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition /><ColumnDefinition /><ColumnDefinition /></Grid.ColumnDefinitions>
+                                        <StackPanel>
+                                            <TextBlock Text="Subtotal" Foreground="{StaticResource TextoSuave}" />
+                                            <TextBlock Text="{Binding Totales.Subtotal, StringFormat={}{0:C0}}" Style="{StaticResource ValorMedio}" />
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1">
+                                            <TextBlock Text="Costo de lo vendido" Foreground="{StaticResource TextoSuave}" />
+                                            <TextBlock Text="{Binding Totales.CostoTotal, StringFormat={}{0:C0}}" Style="{StaticResource ValorMedio}" />
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="2">
+                                            <TextBlock Text="Utilidad bruta" Foreground="{StaticResource TextoSuave}" />
+                                            <TextBlock Style="{StaticResource ValorMedio}" Foreground="{StaticResource Exito}">
+                                                <Run Text="{Binding Totales.UtilidadBruta, StringFormat={}{0:C0}, Mode=OneWay}" />
+                                                <Run Text="{Binding Totales.MargenPct, StringFormat=({0:N1} %), Mode=OneWay}" FontSize="13" />
+                                            </TextBlock>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="3">
+                                            <TextBlock Text="TOTAL A COBRAR" Foreground="{StaticResource AcentoOscuro}" FontWeight="SemiBold" />
+                                            <TextBlock Text="{Binding Totales.Total, StringFormat={}{0:C0}}" Style="{StaticResource ValorGrande}" FontSize="28" Foreground="{StaticResource AcentoOscuro}" />
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                                <TextBlock Text="{Binding MensajeTotales}" Foreground="{StaticResource Peligro}" Margin="0,8,0,0"
+                                           Visibility="{Binding MensajeTotales, Converter={StaticResource TextoVis}}" />
+                                <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
+                                    <Button Style="{StaticResource BotonGrande}" Command="{Binding RegistrarImprimirCommand}" Margin="0,0,10,0"
+                                            Background="{StaticResource Exito}" BorderBrush="{StaticResource Exito}">
+                                        <StackPanel Orientation="Horizontal"><TextBlock FontFamily="{StaticResource Iconos}" Text="&#xE749;" Margin="0,0,10,0" VerticalAlignment="Center" /><TextBlock Text="Vender e imprimir" /></StackPanel>
+                                    </Button>
+                                    <Button Style="{StaticResource BotonGrande}" Content="Vender" Command="{Binding RegistrarCommand}" Margin="0,0,10,0" />
+                                    <Button Content="Cancelar venta" Command="{Binding LimpiarCommand}" MinHeight="64" />
+                                </StackPanel>
+                            </StackPanel>
+
+                            <TextBlock DockPanel.Dock="Top" Text="Detalle de la venta" Style="{StaticResource TituloTarjeta}" />
+                            <DataGrid ItemsSource="{Binding Lineas}">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Lote" Binding="{Binding Lote.CodigoLote}" />
+                                    <DataGridTextColumn Header="Producto" Binding="{Binding Lote.Presentacion}" Width="*" />
+                                    <DataGridTextColumn Header="Cant." Binding="{Binding Cantidad}" ElementStyle="{StaticResource CeldaDerecha}" />
+                                    <DataGridTextColumn Header="Precio" Binding="{Binding Precio, StringFormat=C0}" ElementStyle="{StaticResource CeldaDerecha}" />
+                                    <DataGridTextColumn Header="Subtotal" Binding="{Binding Subtotal, StringFormat=C0}" ElementStyle="{StaticResource CeldaDerecha}" />
+                                    <DataGridTextColumn Header="Costo" Binding="{Binding Costo, StringFormat=C0}" ElementStyle="{StaticResource CeldaDerecha}" />
+                                    <DataGridTextColumn Header="Utilidad" Binding="{Binding Utilidad, StringFormat=C0}" ElementStyle="{StaticResource CeldaDerecha}" />
+                                    <DataGridTemplateColumn>
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button Style="{StaticResource BotonIcono}" Content="&#xE74D;" ToolTip="Quitar"
+                                                        Command="{Binding DataContext.QuitarCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                        CommandParameter="{Binding}" />
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </DockPanel>
+                    </Border>
+                </Grid>
+            </TabItem>
+
+            <!-- ======================= HISTORIAL ======================= -->
+            <TabItem Header="  Ventas realizadas  " Padding="12,8">
+                <Grid Margin="0,14,0,0">
+                    <Grid.RowDefinitions><RowDefinition Height="2*" /><RowDefinition Height="*" /></Grid.RowDefinitions>
+                    <Border Style="{StaticResource Tarjeta}">
+                        <DockPanel>
+                            <WrapPanel DockPanel.Dock="Top" Margin="0,0,0,10">
+                                <TextBlock Text="Desde" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                <DatePicker SelectedDate="{Binding Desde}" Width="150" />
+                                <TextBlock Text="Hasta" VerticalAlignment="Center" Margin="16,0,8,0" />
+                                <DatePicker SelectedDate="{Binding Hasta}" Width="150" Margin="0,0,12,0" />
+                                <Button Content="Consultar" Command="{Binding BuscarCommand}" />
+                                <Button Content="Reimprimir" Command="{Binding ImprimirCommand}" />
+                                <Button Content="Anular venta" Style="{StaticResource BotonPeligro}" Command="{Binding AnularCommand}" />
+                            </WrapPanel>
+                            <TextBlock DockPanel.Dock="Bottom" Margin="0,10,0,0" FontSize="15">
+                                <Run Text="Total del período: " /><Run Text="{Binding TotalPeriodo, StringFormat={}{0:C0}, Mode=OneWay}" FontWeight="SemiBold" />
+                                <Run Text="  ·  Utilidad bruta: " /><Run Text="{Binding UtilidadPeriodo, StringFormat={}{0:C0}, Mode=OneWay}" FontWeight="SemiBold" Foreground="{StaticResource Exito}" />
+                            </TextBlock>
+                            <DataGrid ItemsSource="{Binding Historial}" SelectedItem="{Binding Seleccionada}" RowStyle="{StaticResource FilaConEstado}">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Número" Binding="{Binding NumeroFactura}" />
+                                    <DataGridTextColumn Header="Fecha" Binding="{Binding Fecha, StringFormat=d}" />
+                                    <DataGridTextColumn Header="Cliente" Binding="{Binding Cliente}" Width="*" />
+                                    <DataGridTextColumn Header="Pago" Binding="{Binding TipoPago}" />
+                                    <DataGridTextColumn Header="Total" Binding="{Binding Total, StringFormat=C0}" ElementStyle="{StaticResource CeldaDerecha}" />
+                                    <DataGridTextColumn Header="Costo" Binding="{Binding CostoTotal, StringFormat=C0}" ElementStyle="{StaticResource CeldaDerecha}" />
+                                    <DataGridTextColumn Header="Utilidad" Binding="{Binding Utilidad, StringFormat=C0}" ElementStyle="{StaticResource CeldaDerecha}" />
+                                    <DataGridTextColumn Header="Saldo" Binding="{Binding Saldo, StringFormat=C0}" ElementStyle="{StaticResource CeldaDerecha}" />
+                                    <DataGridTextColumn Header="Estado" Binding="{Binding Estado}" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </DockPanel>
+                    </Border>
+                    <Border Grid.Row="1" Style="{StaticResource Tarjeta}">
+                        <DockPanel>
+                            <TextBlock DockPanel.Dock="Top" Text="Detalle (lote vendido → trazabilidad)" Style="{StaticResource TituloTarjeta}" FontSize="15" />
+                            <DataGrid ItemsSource="{Binding DetalleSeleccionada}">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Lote" Binding="{Binding CodigoLote}" />
+                                    <DataGridTextColumn Header="Producto" Binding="{Binding Presentacion}" Width="*" />
+                                    <DataGridTextColumn Header="Cant." Binding="{Binding Cantidad}" ElementStyle="{StaticResource CeldaDerecha}" />
+                                    <DataGridTextColumn Header="Precio" Binding="{Binding PrecioUnitario, StringFormat=C0}" ElementStyle="{StaticResource CeldaDerecha}" />
+                                    <DataGridTextColumn Header="Subtotal" Binding="{Binding Subtotal, StringFormat=C0}" ElementStyle="{StaticResource CeldaDerecha}" />
+                                    <DataGridTextColumn Header="Costo unit." Binding="{Binding CostoUnitario, StringFormat=C0}" ElementStyle="{StaticResource CeldaDerecha}" />
+                                    <DataGridTextColumn Header="Costo" Binding="{Binding CostoTotal, StringFormat=C0}" ElementStyle="{StaticResource CeldaDerecha}" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </DockPanel>
+                    </Border>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </DockPanel>
+</UserControl>

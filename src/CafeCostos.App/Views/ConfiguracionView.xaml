@@ -1,0 +1,102 @@
+<UserControl x:Class="CafeCostos.App.Views.ConfiguracionView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <DockPanel>
+        <TextBlock DockPanel.Dock="Top" Text="{Binding Titulo}" Style="{StaticResource TituloPantalla}" />
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Margin="0,0,0,16">
+            <Button Content="Guardar configuración" Style="{StaticResource BotonPrimario}" Command="{Binding GuardarCommand}" MinWidth="220" />
+        </StackPanel>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Border Style="{StaticResource Tarjeta}">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <TextBlock Text="Datos del negocio" Style="{StaticResource TituloTarjeta}" />
+                        <TextBlock Text="Aparecen en el comprobante de venta y en los recibos." Style="{StaticResource Ayuda}" />
+                        <TextBlock Text="Nombre comercial *" Style="{StaticResource Etiqueta}" />
+                        <TextBox Text="{Binding Nombre}" />
+                        <TextBlock Text="NIT o cédula" Style="{StaticResource Etiqueta}" />
+                        <TextBox Text="{Binding Nit}" />
+                        <TextBlock Text="Dirección" Style="{StaticResource Etiqueta}" />
+                        <TextBox Text="{Binding Direccion}" />
+                        <Grid>
+                            <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="12" /><ColumnDefinition /></Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <TextBlock Text="Ciudad" Style="{StaticResource Etiqueta}" />
+                                <TextBox Text="{Binding Ciudad}" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Teléfono / WhatsApp" Style="{StaticResource Etiqueta}" />
+                                <TextBox Text="{Binding Telefono}" />
+                            </StackPanel>
+                        </Grid>
+                        <TextBlock Text="Texto al pie del comprobante" Style="{StaticResource Etiqueta}" />
+                        <TextBox Text="{Binding PiePagina}" TextWrapping="Wrap" AcceptsReturn="True" MinHeight="70" VerticalContentAlignment="Top" />
+                        <TextBlock Text="Plazo de crédito por defecto (días)" Style="{StaticResource Etiqueta}" />
+                        <TextBox Text="{Binding DiasCreditoDefecto, Converter={StaticResource Num}}" Style="{StaticResource Numero}" Width="140" HorizontalAlignment="Left" />
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+
+            <Border Grid.Column="1" Style="{StaticResource Tarjeta}">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <TextBlock Text="Costos de producción (tarifas sugeridas)" Style="{StaticResource TituloTarjeta}" />
+                        <TextBlock Style="{StaticResource Ayuda}">
+                            Estos valores prellenan los costos de conversión con el botón «Sugerir». Puede corregirlos en cada orden.
+                            Calcúlelos dividiendo el gasto del mes (gas, energía, salarios del tostador) entre los kilos procesados.
+                        </TextBlock>
+
+                        <TextBlock Text="Tostión" FontWeight="SemiBold" FontSize="15" Margin="0,16,0,0" />
+                        <Grid>
+                            <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="12" /><ColumnDefinition /></Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <TextBlock Text="Gas / energía por kg seco ($)" Style="{StaticResource Etiqueta}" />
+                                <TextBox Text="{Binding EnergiaPorKg, Converter={StaticResource Pesos}}" Style="{StaticResource Numero}" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Mano de obra por kg seco ($)" Style="{StaticResource Etiqueta}" />
+                                <TextBox Text="{Binding ManoObraTuestePorKg, Converter={StaticResource Pesos}}" Style="{StaticResource Numero}" />
+                            </StackPanel>
+                        </Grid>
+
+                        <TextBlock Text="Molienda y empaque" FontWeight="SemiBold" FontSize="15" Margin="0,16,0,0" />
+                        <Grid>
+                            <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="12" /><ColumnDefinition /></Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <TextBlock Text="Molienda por kg ($)" Style="{StaticResource Etiqueta}" />
+                                <TextBox Text="{Binding MoliendaPorKg, Converter={StaticResource Pesos}}" Style="{StaticResource Numero}" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Mano de obra por bolsa ($)" Style="{StaticResource Etiqueta}" />
+                                <TextBox Text="{Binding ManoObraEmpaquePorUnidad, Converter={StaticResource Pesos}}" Style="{StaticResource Numero}" />
+                            </StackPanel>
+                        </Grid>
+                        <Grid>
+                            <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="12" /><ColumnDefinition /></Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <TextBlock Text="Merma de molienda esperada (%)" Style="{StaticResource Etiqueta}" />
+                                <TextBox Text="{Binding MermaMoliendaEsperada, Converter={StaticResource Num}}" Style="{StaticResource Numero}" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Margen bruto objetivo (%)" Style="{StaticResource Etiqueta}" />
+                                <TextBox Text="{Binding MargenObjetivo, Converter={StaticResource Num}}" Style="{StaticResource Numero}" />
+                            </StackPanel>
+                        </Grid>
+
+                        <Border Style="{StaticResource Resaltado}" Margin="0,20,0,0">
+                            <TextBlock TextWrapping="Wrap">
+                                <Run FontWeight="SemiBold" Text="Ejemplo: " />
+                                <Run Text="si en el mes gastó $300.000 de gas y tostó 600 kg secos, la tarifa de energía es $500 por kg seco." />
+                            </TextBlock>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+        </Grid>
+    </DockPanel>
+</UserControl>

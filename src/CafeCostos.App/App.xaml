@@ -1,0 +1,28 @@
+<Application x:Class="CafeCostos.App.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:CafeCostos.App.ViewModels"
+             xmlns:v="clr-namespace:CafeCostos.App.Views"
+             ShutdownMode="OnExplicitShutdown">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Temas/Estilos.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <!-- Cada ViewModel se dibuja con su vista (navegación MVVM sin código) -->
+            <DataTemplate DataType="{x:Type vm:PanelViewModel}"><v:PanelView /></DataTemplate>
+            <DataTemplate DataType="{x:Type vm:LotesViewModel}"><v:LotesView /></DataTemplate>
+            <DataTemplate DataType="{x:Type vm:TuesteViewModel}"><v:TuesteView /></DataTemplate>
+            <DataTemplate DataType="{x:Type vm:EmpaqueViewModel}"><v:EmpaqueView /></DataTemplate>
+            <DataTemplate DataType="{x:Type vm:VentasViewModel}"><v:VentasView /></DataTemplate>
+            <DataTemplate DataType="{x:Type vm:CarteraViewModel}"><v:CarteraView /></DataTemplate>
+            <DataTemplate DataType="{x:Type vm:ClientesViewModel}"><v:ClientesView /></DataTemplate>
+            <DataTemplate DataType="{x:Type vm:InsumosViewModel}"><v:InsumosView /></DataTemplate>
+            <DataTemplate DataType="{x:Type vm:PresentacionesViewModel}"><v:PresentacionesView /></DataTemplate>
+            <DataTemplate DataType="{x:Type vm:ReportesViewModel}"><v:ReportesView /></DataTemplate>
+            <DataTemplate DataType="{x:Type vm:RespaldoViewModel}"><v:RespaldoView /></DataTemplate>
+            <DataTemplate DataType="{x:Type vm:ConfiguracionViewModel}"><v:ConfiguracionView /></DataTemplate>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

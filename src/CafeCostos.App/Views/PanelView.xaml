@@ -1,0 +1,123 @@
+<UserControl x:Class="CafeCostos.App.Views.PanelView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="0,0,0,20">
+            <DockPanel Margin="0,0,16,8">
+                <Button DockPanel.Dock="Right" Content="Actualizar" Command="{Binding ActualizarCommand}" VerticalAlignment="Top" />
+                <StackPanel>
+                    <TextBlock Style="{StaticResource TituloPantalla}" Margin="0">
+                        <Run Text="{Binding Saludo, Mode=OneWay}" />
+                    </TextBlock>
+                    <TextBlock Text="{Binding Fecha}" Foreground="{StaticResource TextoSuave}" FontSize="15" Margin="0,4,0,16" />
+                </StackPanel>
+            </DockPanel>
+
+            <!-- ============ ACCESOS RÁPIDOS (botones grandes, aptos para pantalla táctil) ============ -->
+            <WrapPanel Margin="0,0,0,8">
+                <Button Style="{StaticResource BotonGrande}" Margin="0,0,12,12" Command="{Binding IrCommand}" CommandParameter="lotes">
+                    <StackPanel Orientation="Horizontal"><TextBlock FontFamily="{StaticResource Iconos}" Text="&#xE8F1;" FontSize="22" Margin="0,0,10,0" VerticalAlignment="Center"/><TextBlock Text="Recibir café seco" /></StackPanel>
+                </Button>
+                <Button Style="{StaticResource BotonGrande}" Margin="0,0,12,12" Command="{Binding IrCommand}" CommandParameter="tueste">
+                    <StackPanel Orientation="Horizontal"><TextBlock FontFamily="{StaticResource Iconos}" Text="&#xE706;" FontSize="22" Margin="0,0,10,0" VerticalAlignment="Center"/><TextBlock Text="Registrar tostión" /></StackPanel>
+                </Button>
+                <Button Style="{StaticResource BotonGrande}" Margin="0,0,12,12" Command="{Binding IrCommand}" CommandParameter="empaque">
+                    <StackPanel Orientation="Horizontal"><TextBlock FontFamily="{StaticResource Iconos}" Text="&#xE7B8;" FontSize="22" Margin="0,0,10,0" VerticalAlignment="Center"/><TextBlock Text="Empacar" /></StackPanel>
+                </Button>
+                <Button Style="{StaticResource BotonGrande}" Margin="0,0,12,12" Command="{Binding IrCommand}" CommandParameter="ventas" Background="{StaticResource Exito}" BorderBrush="{StaticResource Exito}">
+                    <StackPanel Orientation="Horizontal"><TextBlock FontFamily="{StaticResource Iconos}" Text="&#xE719;" FontSize="22" Margin="0,0,10,0" VerticalAlignment="Center"/><TextBlock Text="Nueva venta" /></StackPanel>
+                </Button>
+                <Button Style="{StaticResource BotonGrande}" Margin="0,0,12,12" Command="{Binding IrCommand}" CommandParameter="cartera" Background="{StaticResource AcentoOscuro}" BorderBrush="{StaticResource AcentoOscuro}">
+                    <StackPanel Orientation="Horizontal"><TextBlock FontFamily="{StaticResource Iconos}" Text="&#xE8C7;" FontSize="22" Margin="0,0,10,0" VerticalAlignment="Center"/><TextBlock Text="Recibir abono" /></StackPanel>
+                </Button>
+            </WrapPanel>
+
+            <!-- ============ INDICADORES ============ -->
+            <TextBlock Text="Ventas y cartera" Style="{StaticResource TituloTarjeta}" />
+            <WrapPanel>
+                <Border Style="{StaticResource Kpi}">
+                    <StackPanel>
+                        <TextBlock Text="Ventas de hoy" Style="{StaticResource Etiqueta}" Margin="0,0,0,6" />
+                        <TextBlock Text="{Binding Resumen.VentasHoy, StringFormat={}{0:C0}}" Style="{StaticResource ValorGrande}" />
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource Kpi}">
+                    <StackPanel>
+                        <TextBlock Text="Ventas del mes" Style="{StaticResource Etiqueta}" Margin="0,0,0,6" />
+                        <TextBlock Text="{Binding Resumen.VentasMes, StringFormat={}{0:C0}}" Style="{StaticResource ValorGrande}" />
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource Kpi}">
+                    <StackPanel>
+                        <TextBlock Text="Utilidad bruta del mes" Style="{StaticResource Etiqueta}" Margin="0,0,0,6" />
+                        <TextBlock Text="{Binding Resumen.UtilidadMes, StringFormat={}{0:C0}}" Style="{StaticResource ValorGrande}" Foreground="{StaticResource Exito}" />
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource Kpi}">
+                    <StackPanel>
+                        <TextBlock Text="Cartera por cobrar" Style="{StaticResource Etiqueta}" Margin="0,0,0,6" />
+                        <TextBlock Text="{Binding Resumen.CarteraTotal, StringFormat={}{0:C0}}" Style="{StaticResource ValorGrande}" />
+                        <TextBlock Foreground="{StaticResource Peligro}" FontSize="13" Margin="0,4,0,0">
+                            <Run Text="Vencida: " /><Run Text="{Binding Resumen.CarteraVencida, StringFormat={}{0:C0}, Mode=OneWay}" FontWeight="SemiBold" />
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+            </WrapPanel>
+
+            <TextBlock Text="Inventario valorizado al costo" Style="{StaticResource TituloTarjeta}" Margin="0,8,0,12" />
+            <WrapPanel>
+                <Border Style="{StaticResource Kpi}">
+                    <StackPanel>
+                        <TextBlock Text="Café seco" Style="{StaticResource Etiqueta}" Margin="0,0,0,6" />
+                        <TextBlock Text="{Binding Resumen.ValorCafeSeco, StringFormat={}{0:C0}}" Style="{StaticResource ValorMedio}" />
+                        <TextBlock Text="{Binding Resumen.KgCafeSeco, StringFormat={}{0:N2} kg}" Foreground="{StaticResource TextoSuave}" />
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource Kpi}">
+                    <StackPanel>
+                        <TextBlock Text="Café tostado (a granel)" Style="{StaticResource Etiqueta}" Margin="0,0,0,6" />
+                        <TextBlock Text="{Binding Resumen.ValorCafeTostado, StringFormat={}{0:C0}}" Style="{StaticResource ValorMedio}" />
+                        <TextBlock Text="{Binding Resumen.KgCafeTostado, StringFormat={}{0:N2} kg}" Foreground="{StaticResource TextoSuave}" />
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource Kpi}">
+                    <StackPanel>
+                        <TextBlock Text="Producto terminado" Style="{StaticResource Etiqueta}" Margin="0,0,0,6" />
+                        <TextBlock Text="{Binding Resumen.ValorProductoTerminado, StringFormat={}{0:C0}}" Style="{StaticResource ValorMedio}" />
+                        <TextBlock Text="{Binding Resumen.UnidadesProductoTerminado, StringFormat={}{0:N0} bolsas}" Foreground="{StaticResource TextoSuave}" />
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource Kpi}">
+                    <StackPanel>
+                        <TextBlock Text="Insumos de empaque" Style="{StaticResource Etiqueta}" Margin="0,0,0,6" />
+                        <TextBlock Text="{Binding Resumen.ValorInsumos, StringFormat={}{0:C0}}" Style="{StaticResource ValorMedio}" />
+                        <TextBlock Text="{Binding Resumen.MermaPromedioMes, StringFormat=Merma tostión del mes: {0:N1} %}" Foreground="{StaticResource TextoSuave}" />
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource Kpi}" Background="{StaticResource AcentoClaro}">
+                    <StackPanel>
+                        <TextBlock Text="Total inventario" Style="{StaticResource Etiqueta}" Margin="0,0,0,6" />
+                        <TextBlock Text="{Binding Resumen.InventarioTotal, StringFormat={}{0:C0}, Mode=OneWay}" Style="{StaticResource ValorMedio}" />
+                    </StackPanel>
+                </Border>
+            </WrapPanel>
+
+            <!-- ============ ALERTAS ============ -->
+            <Border Style="{StaticResource Tarjeta}" Margin="0,8,16,0">
+                <StackPanel>
+                    <TextBlock Text="Avisos" Style="{StaticResource TituloTarjeta}" />
+                    <ItemsControl ItemsSource="{Binding Alertas}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <DockPanel Margin="0,4">
+                                    <TextBlock FontFamily="{StaticResource Iconos}" Text="&#xE946;" Foreground="{StaticResource Acento}" FontSize="16" Margin="0,2,10,0" />
+                                    <TextBlock Text="{Binding}" TextWrapping="Wrap" FontSize="15" />
+                                </DockPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

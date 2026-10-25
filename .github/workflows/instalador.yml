@@ -1,0 +1,41 @@
+# Fabrica el instalador de CaféCostos en un servidor Windows de GitHub (gratis).
+# Se ejecuta solo con cada cambio, o a mano desde la pestaña «Actions» → «Run workflow».
+# Resultado: artefacto «CafeCostos-Instalador» con CafeCostos_Instalador_X.Y.Z.exe
+name: Fabricar instalador
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  instalador:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Pruebas del motor de costeo
+        run: dotnet test tests\CafeCostos.Tests\CafeCostos.Tests.csproj -c Release --nologo
+
+      - name: Publicar CafeCostos.exe autocontenido
+        run: dotnet publish src\CafeCostos.App\CafeCostos.App.csproj -p:PublishProfile=Win64 --nologo
+
+      - name: Instalar Inno Setup
+        run: choco install innosetup -y --no-progress
+
+      - name: Compilar instalador
+        shell: pwsh
+        run: |
+          $iscc = Get-ChildItem "${env:ProgramFiles(x86)}","$env:ProgramFiles" -Recurse -Filter ISCC.exe -ErrorAction SilentlyContinue | Select-Object -First 1
+          & $iscc.FullName /Q installer\CafeCostos.iss
+          if ($LASTEXITCODE -ne 0) { exit 1 }
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: CafeCostos-Instalador
+          path: publish/CafeCostos_Instalador_*.exe
+          if-no-files-found: error

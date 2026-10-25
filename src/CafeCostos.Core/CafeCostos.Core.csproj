@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Núcleo de dominio: SIN dependencias externas. Contiene toda la matemática de costeo,
+       por eso puede probarse de forma aislada y no depende de la base de datos ni de la UI. -->
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>CafeCostos.Core</RootNamespace>
+  </PropertyGroup>
+</Project>

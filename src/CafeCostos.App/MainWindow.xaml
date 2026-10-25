@@ -1,0 +1,77 @@
+<Window x:Class="CafeCostos.App.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="CaféCostos · Gestión y costeo para tostadores"
+        Icon="Recursos/cafe.ico"
+        Width="1366" Height="800" MinWidth="1100" MinHeight="680"
+        WindowStartupLocation="CenterScreen" WindowState="Maximized"
+        Background="{StaticResource Fondo}"
+        FontFamily="Segoe UI" FontSize="14"
+        Closing="AlCerrar">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="260" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- ===================== MENÚ LATERAL ===================== -->
+        <DockPanel Background="{StaticResource Barra}">
+            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="20,24,20,20">
+                <Image Source="Recursos/cafe.png" Width="40" Height="40" />
+                <StackPanel Margin="12,0,0,0" VerticalAlignment="Center">
+                    <TextBlock Text="CaféCostos" Foreground="White" FontSize="19" FontWeight="SemiBold" />
+                    <TextBlock Text="{Binding NombreEmpresa}" Foreground="{StaticResource BarraTexto}" FontSize="12"
+                               TextTrimming="CharacterEllipsis" MaxWidth="170" />
+                </StackPanel>
+            </StackPanel>
+
+            <TextBlock DockPanel.Dock="Bottom" Margin="24,12,24,18" FontSize="11.5" Foreground="#9C8C80"
+                       TextWrapping="Wrap" Text="Al cerrar se guarda una copia de seguridad automática del día." />
+
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <ItemsControl ItemsSource="{Binding Menu}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel>
+                                <Border Height="1" Background="#45322A" Margin="20,8"
+                                        Visibility="{Binding SeparadorAntes, Converter={StaticResource BoolVis}}" />
+                                <Button Style="{StaticResource BotonMenu}"
+                                        Command="{Binding DataContext.NavegarCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                        CommandParameter="{Binding Clave}" ToolTip="{Binding Titulo}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding Icono}" FontFamily="{StaticResource Iconos}" FontSize="18"
+                                                   Width="28" VerticalAlignment="Center" />
+                                        <TextBlock Text="{Binding Titulo}" VerticalAlignment="Center" Margin="6,0,0,0" />
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </DockPanel>
+
+        <!-- ===================== CONTENIDO ===================== -->
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <ProgressBar IsIndeterminate="True"
+                         Visibility="{Binding VistaActual.Ocupado, Converter={StaticResource BoolVis}}" />
+            <ContentControl Grid.Row="1" Content="{Binding VistaActual}" Margin="28,20,12,8" Focusable="False" />
+        </Grid>
+
+        <!-- ===================== CAPA "GUARDANDO COPIA" AL CERRAR ===================== -->
+        <Border x:Name="CapaCierre" Grid.ColumnSpan="2" Background="#CC2F2119" Visibility="Collapsed">
+            <Border Background="White" CornerRadius="16" Padding="40,32" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="420">
+                <StackPanel>
+                    <TextBlock Text="Guardando copia de seguridad del día…" FontSize="20" FontWeight="SemiBold" HorizontalAlignment="Center" />
+                    <TextBlock x:Name="TextoCierre" Text="No apague el computador." Margin="0,10,0,0"
+                               Foreground="{StaticResource TextoSuave}" HorizontalAlignment="Center" />
+                    <ProgressBar IsIndeterminate="True" Height="6" Margin="0,20,0,0" />
+                </StackPanel>
+            </Border>
+        </Border>
+    </Grid>
+</Window>
